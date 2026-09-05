@@ -2,15 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/akshayvibe/GoRag/internal/ingestion/format"
+
+
+	"github.com/akshayvibe/GoRag/internal/ingestion/upload"
 )
 
 func main() {
-	//getting the pdf content from the terminal
+
+	// Part -1 ingestion pipeline
 	Path:="../data/demo.pdf"
-	content,err:=ingestion.OpenPdf(Path)
+	content,err:=upload.OpenPdf(Path)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(content)
 }
+
