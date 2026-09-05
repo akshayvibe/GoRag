@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/akshayvibe/GoRag/internal/ingestion"
+	"github.com/akshayvibe/GoRag/internal/ingestion/format"
 )
 
 func main() {
