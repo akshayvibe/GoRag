@@ -1,14 +1,14 @@
 package models
 
 type Chunk struct {
-    ID       string
-    Content  string
-    Metadata Metadata
+    ID       string  `json:"id"`
+    Content  string  `json:"content"`
+    Metadata Metadata `json:"metadata"`
 }
 
 type Metadata struct {
-    DocumentID string
-    FileName   string
-    PageNumber int
-    ChunkIndex int
+    DocumentID string `json:"document_id"`
+    FileName   string `json:"file_name"`
+    PageNumber int    `json:"page_number"`
+    ChunkIndex int    `json:"chunk_index"`
 }
