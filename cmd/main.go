@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	// Part -1 ingestion pipeline
+	// Part -1 indexing pipeline
 	Path:="../data/demo.pdf"
 	content,err:=upload.OpenPdf(Path)
 	if err != nil {

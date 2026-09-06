@@ -3,6 +3,7 @@ package models
 type Chunk struct {
     ID       string  `json:"id"`
     Content  string  `json:"content"`
+    Tokens   int     `json:"tokens"`
     Metadata Metadata `json:"metadata"`
 }
 
