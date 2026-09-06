@@ -10,6 +10,6 @@ type Chunk struct {
 type Metadata struct {
     DocumentID string `json:"document_id"`
     FileName   string `json:"file_name"`
-    PageNumber int    `json:"page_number"`
-    ChunkIndex int    `json:"chunk_index"`
+    // PageNumber int    `json:"page_number"`
+    // ChunkIndex int    `json:"chunk_index"`
 }
