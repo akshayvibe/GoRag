@@ -5,7 +5,7 @@ import (
 	"log"
 	"encoding/json"
 
-	"github.com/akshayvibe/GoRag/internal/ingestion/upload"
+	"github.com/akshayvibe/GoRag/internal/indexing/upload"
 )
 
 func main() {
