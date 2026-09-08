@@ -1,0 +1,98 @@
+# Binaries for programs and plugins
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+
+*.test
+
+# Output of the go coverage tool
+
+*.out
+
+# Go build output
+
+/bin/
+/build/
+/dist/
+
+# Go workspace file
+
+go.work
+go.work.sum
+
+# Dependency/vendor directory
+
+# Uncomment if you don't want to commit vendor dependencies
+
+# vendor/
+
+# Environment files
+
+.env
+.env.*
+!.env.example
+
+# Logs
+
+*.log
+logs/
+
+# Temporary files
+
+tmp/
+temp/
+
+# OS generated files
+
+.DS_Store
+Thumbs.db
+
+# IDE / Editor files
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Debug files
+
+debug
+debug.test
+
+# Coverage reports
+
+coverage/
+coverage.out
+coverprofile.out
+
+# Air live reload
+
+.air.toml
+
+# GoLand / IntelliJ
+
+*.iml
+
+# Local configuration
+
+config.local.*
+config/*.local.*
+
+# Generated files
+
+*.gen.go
+
+# Docker
+
+docker-compose.override.yml
+
+# Misc
+
+*.bak
+*.tmp
+*.orig
