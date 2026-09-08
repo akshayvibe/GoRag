@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -8,8 +9,8 @@ import (
 	"github.com/akshayvibe/GoRag/internal/indexing/chunker"
 	"github.com/akshayvibe/GoRag/internal/indexing/embedding"
 	"github.com/akshayvibe/GoRag/internal/indexing/upload"
-	"github.com/pkoukk/tiktoken-go"
 	"github.com/joho/godotenv"
+	"github.com/pkoukk/tiktoken-go"
 )
 
 func main() {
@@ -52,7 +53,7 @@ func main() {
 		texts[i] = chunks[i].Content
 	}
 
-	vectors, err := embedding.VectorEmbedding(texts)
+	vectors, err := embedding.VectorEmbedding(context.Background(),texts)
 	if err != nil {
 		panic(err)
 	}

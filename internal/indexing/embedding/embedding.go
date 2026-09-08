@@ -1,3 +1,4 @@
+
 package embedding
 
 import (
@@ -17,30 +18,37 @@ type ollamaEmbeddingResponse struct {
 	Embeddings [][]float32 `json:"embeddings"`
 }
 
-func VectorEmbedding(texts []string) ([][]float32, error) {
-	ctx := context.Background()
+const (
+	ollamaURL   = "http://localhost:11434/api/embed"
+	embeddingModel = "nomic-embed-text"
+)
+
+func VectorEmbedding(ctx context.Context, texts []string) ([][]float32, error) {
+	if len(texts) == 0 {
+		return [][]float32{}, nil
+	}
 
 	embeddings := make([][]float32, 0, len(texts))
 
 	for _, text := range texts {
 		reqBody := ollamaEmbeddingRequest{
-			Model: "nomic-embed-text",
+			Model: embeddingModel,
 			Input: text,
 		}
 
 		body, err := json.Marshal(reqBody)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to marshal embedding request: %w", err)
 		}
 
 		req, err := http.NewRequestWithContext(
 			ctx,
 			http.MethodPost,
-			"http://localhost:11434/api/embed",
-			bytes.NewBuffer(body),
+			ollamaURL,
+			bytes.NewReader(body),
 		)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to create embedding request: %w", err)
 		}
 
 		req.Header.Set("Content-Type", "application/json")
@@ -52,6 +60,7 @@ func VectorEmbedding(texts []string) ([][]float32, error) {
 
 		if resp.StatusCode != http.StatusOK {
 			resp.Body.Close()
+
 			return nil, fmt.Errorf(
 				"Ollama returned status %d",
 				resp.StatusCode,
@@ -64,7 +73,10 @@ func VectorEmbedding(texts []string) ([][]float32, error) {
 		resp.Body.Close()
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf(
+				"failed to decode Ollama response: %w",
+				err,
+			)
 		}
 
 		if len(result.Embeddings) == 0 {
@@ -76,4 +88,3 @@ func VectorEmbedding(texts []string) ([][]float32, error) {
 
 	return embeddings, nil
 }
-
