@@ -4,6 +4,7 @@ type Chunk struct {
     ID       string  `json:"id"`
     Content  string  `json:"content"`
     Tokens   int     `json:"tokens"`
+    Vector   []float32 `json:"vector"`
     Metadata Metadata `json:"metadata"`
 }
 
