@@ -10,12 +10,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type PdfContent struct {
-	Text     string
-	Metadata models.Metadata
-}
 
-func OpenPdf(path string) (*PdfContent, error) {
+
+func OpenPdf(path string) (*models.PdfContent, error) {
 	// Get PDF content
 	content, err := readPdf(path)
 	if err != nil {
@@ -25,7 +22,7 @@ func OpenPdf(path string) (*PdfContent, error) {
 	// Get document metadata
 	metadata := getMetadata(path)
 
-	return &PdfContent{
+	return &models.PdfContent{
 		Text:     content,
 		Metadata: metadata,
 	}, nil

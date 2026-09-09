@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/akshayvibe/GoRag/internal/config"
+	"github.com/akshayvibe/GoRag/internal/handler"
 	"github.com/akshayvibe/GoRag/internal/indexing/chunker"
 	"github.com/akshayvibe/GoRag/internal/indexing/embedding"
 	"github.com/akshayvibe/GoRag/internal/indexing/upload"
@@ -14,21 +16,19 @@ import (
 )
 
 func main() {
+
+	// cfg:=config.Load();
 	err := godotenv.Load("../.env")
 	if err != nil {
     log.Fatal("Error loading .env:", err)
 	}
 	Path := "../data/demo.pdf"
-	content, err := upload.OpenPdf(Path)
+	PdfData, err := handler.UploadHandler(Path)
 	if err != nil {
 		panic(err)
 	}
-	data, err := json.MarshalIndent(content, "", "  ")
-	if err != nil {
-		log.Fatal(err)
-	}
 	//Getting parsed content
-	fmt.Printf("Parsed Content: %s", string(data))
+	fmt.Printf("Parsed Content: %s", PdfData)
 
 	//Get encoding model
 	Encoding, err := tiktoken.GetEncoding("cl100k_base")
