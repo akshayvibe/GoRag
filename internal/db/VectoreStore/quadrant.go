@@ -51,7 +51,6 @@ func (s *QdrantStore) CreateCollection(ctx context.Context) error {
 
 	err = s.client.CreateCollection(ctx, &qdrant.CreateCollection{
 		CollectionName: s.collectionName,
-
 		VectorsConfig: qdrant.NewVectorsConfig(
 			&qdrant.VectorParams{
 				Size:     s.vectorSize,
@@ -159,11 +158,7 @@ func (s *QdrantStore) AddDocument(
 			{
 				Id: qdrant.NewIDNum(id),
 
-				Vectors: qdrant.NewVectors(
-					&qdrant.Vector{
-						Data: vector,
-					},
-				),
+				Vectors: qdrant.NewVectors(vector...),
 
 				Payload: qdrant.NewValueMap(
 					map[string]any{
@@ -216,11 +211,7 @@ func (s *QdrantStore) AddDocuments(
 		points = append(points, &qdrant.PointStruct{
 			Id: qdrant.NewIDNum(ids[i]),
 
-			Vectors: qdrant.NewVectors(
-				&qdrant.Vector{
-					Data: vectors[i],
-				},
-			),
+			Vectors: qdrant.NewVectors(vectors[i]...),
 
 			Payload: qdrant.NewValueMap(
 				map[string]any{
@@ -263,17 +254,7 @@ func (s *QdrantStore) Search(
 		&qdrant.QueryPoints{
 			CollectionName: s.collectionName,
 
-			Query: qdrant.NewQuery(
-				&qdrant.VectorInput{
-					{
-						Variant: &qdrant.VectorInput_Vector{
-							Vector: &qdrant.Vector{
-								Data: vector,
-							},
-						},
-					},
-				},
-			),
+			Query: qdrant.NewQuery(vector...),
 
 			Limit: &limit,
 
@@ -334,14 +315,8 @@ func (s *QdrantStore) Delete(
 		ctx,
 		&qdrant.DeletePoints{
 			CollectionName: s.collectionName,
-
-			Points: &qdrant.PointsSelector{
-				PointsSelectorOneOf: &qdrant.PointsSelector_Points{
-					Points: &qdrant.PointsIds{
-						Ids: pointIDs,
-					},
-				},
-			},
+			// Use the helper method and unpack the slice
+			Points: qdrant.NewPointsSelector(pointIDs...), 
 		},
 	)
 
@@ -357,12 +332,8 @@ func (s *QdrantStore) DeleteCollection(
 	ctx context.Context,
 ) error {
 
-	_, err := s.client.DeleteCollection(
-		ctx,
-		&qdrant.DeleteCollection{
-			CollectionName: s.collectionName,
-		},
-	)
+	// Pass the collection name string directly
+	err := s.client.DeleteCollection(ctx, s.collectionName)
 
 	if err != nil {
 		return fmt.Errorf(
