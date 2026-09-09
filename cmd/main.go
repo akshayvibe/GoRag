@@ -6,18 +6,27 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/akshayvibe/GoRag/internal/config"
 	"github.com/akshayvibe/GoRag/internal/db/vectorstore"
 	"github.com/akshayvibe/GoRag/internal/handler"
 	"github.com/akshayvibe/GoRag/internal/indexing/chunker"
+
 	"github.com/joho/godotenv"
 	"github.com/pkoukk/tiktoken-go"
 )
 
 func main() {
 	if err := godotenv.Load("../.env"); err != nil {
-		log.Println("Warning: No .env file found or error loading it.")
+		log.Fatal("Error loading .env file")
 	}
-
+	cfg := config.Load();
+	log.Printf(
+		"Qdrant config: host=%q port=%d tls=%t apiKeySet=%t",
+		cfg.QdrantHost,
+		cfg.QdrantPort,
+		cfg.QdrantUseTLS,
+		cfg.QdrantAPIKey != "",
+	)
 	encoding, err := tiktoken.GetEncoding("cl100k_base")
 	if err != nil {
 		log.Fatalf("Failed to get encoding: %v", err)
@@ -29,7 +38,7 @@ func main() {
 		OverlapSize: 50,
 	}
 
-	store, err := vectorstore.NewQdrantStore("localhost", 6334, "demo_collection", 1536)
+	store, err := vectorstore.NewQdrantStore(cfg,"demo_collection", 1536)
 	if err != nil {
 		log.Fatalf("Failed to connect to Qdrant: %v", err)
 	}

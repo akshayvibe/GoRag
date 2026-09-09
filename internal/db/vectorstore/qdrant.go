@@ -1,10 +1,10 @@
-
 package vectorstore
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/akshayvibe/GoRag/internal/config"
 	"github.com/qdrant/go-client/qdrant"
 )
 
@@ -13,18 +13,20 @@ type QdrantStore struct {
 	collectionName string
 	vectorSize     uint64
 }
+// var cfg config.Lo
 
 // NewQdrantStore creates a new Qdrant vector store.
 func NewQdrantStore(
-	host string,
-	port int,
+	cfg config.Config,
 	collectionName string,
 	vectorSize uint64,
 ) (*QdrantStore, error) {
 
 	client, err := qdrant.NewClient(&qdrant.Config{
-		Host: host,
-		Port: port,
+		Host:   cfg.QdrantHost,
+		Port:   cfg.QdrantPort,
+		APIKey: cfg.QdrantAPIKey,
+		UseTLS: cfg.QdrantUseTLS,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to qdrant: %w", err)
@@ -36,7 +38,6 @@ func NewQdrantStore(
 		vectorSize:     vectorSize,
 	}, nil
 }
-
 // CreateCollection creates the Qdrant collection if it doesn't already exist.
 func (s *QdrantStore) CreateCollection(ctx context.Context) error {
 
