@@ -2,69 +2,54 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
-	"github.com/akshayvibe/GoRag/internal/config"
+	"github.com/akshayvibe/GoRag/internal/db/vectorstore"
 	"github.com/akshayvibe/GoRag/internal/handler"
 	"github.com/akshayvibe/GoRag/internal/indexing/chunker"
-	"github.com/akshayvibe/GoRag/internal/indexing/embedding"
-	"github.com/akshayvibe/GoRag/internal/indexing/upload"
 	"github.com/joho/godotenv"
 	"github.com/pkoukk/tiktoken-go"
 )
 
 func main() {
+	if err := godotenv.Load("../.env"); err != nil {
+		log.Println("Warning: No .env file found or error loading it.")
+	}
 
-	// cfg:=config.Load();
-	err := godotenv.Load("../.env")
+	encoding, err := tiktoken.GetEncoding("cl100k_base")
 	if err != nil {
-    log.Fatal("Error loading .env:", err)
+		log.Fatalf("Failed to get encoding: %v", err)
 	}
-	Path := "../data/demo.pdf"
-	PdfData, err := handler.UploadHandler(Path)
-	if err != nil {
-		panic(err)
-	}
-	//Getting parsed content
-	fmt.Printf("Parsed Content: %s", PdfData)
 
-	//Get encoding model
-	Encoding, err := tiktoken.GetEncoding("cl100k_base")
-	if err != nil {
-		panic(err)
-	}
-	//Initialize token chunker
 	tokenChunker := chunker.TokenChunker{
-		Encoding:    Encoding,
+		Encoding:    encoding,
 		ChunkSize:   500,
 		OverlapSize: 50,
 	}
-	//Chunk content
-	chunks, err := tokenChunker.ChunkText(content.Text, content.Metadata)
+
+	store, err := vectorstore.NewQdrantStore("localhost", 6334, "demo_collection", 1536)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to connect to Qdrant: %v", err)
 	}
-	// creating Vector Embeddings for chunks
-	texts := make([]string, len(chunks))
+	defer store.Close()
 
-	for i := range chunks {
-		texts[i] = chunks[i].Content
-	}
-
-	vectors, err := embedding.VectorEmbedding(context.Background(),texts)
-	if err != nil {
-		panic(err)
+	ctx := context.Background()
+	if err := store.CreateCollection(ctx); err != nil {
+		log.Fatalf("Failed to create collection: %v", err)
 	}
 
-	for i := range chunks {
-		chunks[i].Vector = vectors[i]
-	}
-	data, err = json.MarshalIndent(chunks, "", "  ")
-	if err != nil {
-		log.Fatal(err)
+	appHandler := &handler.AppHandler{
+		Store:   store,
+		Chunker: tokenChunker,
 	}
 
-	fmt.Printf("Chunks: %s", string(data))
+	http.HandleFunc("/upload", appHandler.UploadEndpoint)
+
+	port := ":8080"
+	fmt.Printf("Server is starting on http://localhost%s\n", port)
+	if err := http.ListenAndServe(port, nil); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }

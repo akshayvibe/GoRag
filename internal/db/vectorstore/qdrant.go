@@ -112,11 +112,7 @@ func (s *QdrantStore) Add(
 			{
 				Id: qdrant.NewIDNum(id),
 
-				Vectors: qdrant.NewVectors(
-					&qdrant.Vector{
-						Data: vector,
-					},
-				),
+				Vectors: qdrant.NewVectors(vector...),
 
 				Payload: qdrant.NewValueMap(
 					map[string]any{
@@ -345,7 +341,6 @@ func (s *QdrantStore) DeleteCollection(
 
 	return nil
 }
-
 // Close closes the Qdrant client connection.
 func (s *QdrantStore) Close() error {
 	return s.client.Close()
