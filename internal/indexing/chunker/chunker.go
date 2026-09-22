@@ -12,24 +12,19 @@ type TokenChunker struct{
 	ChunkSize int
 	OverlapSize int
 }
-func NewTokenChunker(encodingName string, chunkSize int, overlapSize int) *TokenChunker {	
+func NewTokenChunker(encodingName string, chunkSize int, overlapSize int) *TokenChunker {
+	if chunkSize <= 0 || overlapSize < 0 || overlapSize >= chunkSize {
+		return nil
+	}
+
 	tke, err := tiktoken.GetEncoding(encodingName)
-	if chunkSize<=0 || overlapSize<0 {
-		return nil
-	}
-	if tke == nil {
-		return nil
-	}
-	if overlapSize >= chunkSize {
-		return nil
-	}
 	if err != nil {
-		err = fmt.Errorf("getEncoding: %v", err)
 		return nil
 	}
+
 	return &TokenChunker{
-		Encoding:  tke,
-		ChunkSize: chunkSize,
+		Encoding:    tke,
+		ChunkSize:   chunkSize,
 		OverlapSize: overlapSize,
 	}
 }

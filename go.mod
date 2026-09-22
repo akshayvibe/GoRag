@@ -4,6 +4,8 @@ go 1.26.2
 
 require (
 	github.com/dslipak/pdf v0.0.2
+	github.com/go-playground/locales v0.14.1
+	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pkoukk/tiktoken-go v0.1.8
