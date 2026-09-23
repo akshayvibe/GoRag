@@ -10,6 +10,7 @@ import (
 	"github.com/akshayvibe/GoRag/internal/db/vectorstore"
 	"github.com/akshayvibe/GoRag/internal/handler"
 	"github.com/akshayvibe/GoRag/internal/indexing/chunker"
+	"github.com/akshayvibe/GoRag/internal/retrieval"
 
 	"github.com/joho/godotenv"
 	"github.com/pkoukk/tiktoken-go"
@@ -48,13 +49,16 @@ func main() {
 	if err := store.CreateCollection(ctx); err != nil {
 		log.Fatalf("Failed to create collection: %v", err)
 	}
-
+	retriever := retrieval.NewRetriever(store)
+	
 	appHandler := &handler.AppHandler{
-		Store:   store,
-		Chunker: tokenChunker,
+		Store:     store,
+		Chunker:   tokenChunker,
+		Retriever: retriever,
 	}
-
 	http.HandleFunc("/upload", appHandler.UploadEndpoint)
+	http.HandleFunc("/query", appHandler.SendReq)
+	
 
 	port := ":8080"
 	fmt.Printf("Server is starting on http://localhost%s\n", port)

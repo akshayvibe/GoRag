@@ -30,3 +30,9 @@ type PdfContent struct {
 	Text     string
 	Metadata Metadata
 }
+type RetrievedChunk struct {
+	ID      string `json:"id"`
+	Content string `json:"content"`
+	Source  string `json:"source"`
+	Score   float32 `json:"score"`
+}

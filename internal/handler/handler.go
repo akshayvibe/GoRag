@@ -13,11 +13,13 @@ import (
 	"github.com/akshayvibe/GoRag/internal/indexing/embedding"
 	"github.com/akshayvibe/GoRag/internal/indexing/upload"
 	"github.com/akshayvibe/GoRag/internal/models"
+	"github.com/akshayvibe/GoRag/internal/retrieval"
 )
 
 type AppHandler struct {
 	Store   *vectorstore.QdrantStore
 	Chunker chunker.TokenChunker
+	Retriever *retrieval.Retriever
 }
 
 // UploadEndpoint is now a clean orchestrator.
@@ -131,28 +133,34 @@ func (h *AppHandler) respondSuccess(w http.ResponseWriter, filename string, chun
 		"file":    filename,
 	})
 }
-
-func (h *AppHandler) sendReq(w http.ResponseWriter, r *http.Request) {
+func (h *AppHandler) SendReq(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	reqText := r.URL.Query().Get("text")
-	if reqText == "" {
+	query := r.URL.Query().Get("text")
+
+	if query == "" {
 		http.Error(w, "text query parameter is required", http.StatusBadRequest)
 		return
 	}
 
-	chunks, err := h.Chunker.ChunkText(reqText,models.Metadata{})
+	results, err := h.Retriever.Retrieve(
+		r.Context(),
+		query,
+		5,
+	)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if err := h.embedAndStore(r.Context(), chunks, "text-input"); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
-	h.respondSuccess(w, "text-input", len(chunks))
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"query":   query,
+		"results": results,
+	})
 }
