@@ -4,16 +4,20 @@ go 1.26.2
 
 require (
 	github.com/dslipak/pdf v0.0.2
-	github.com/go-playground/locales v0.14.1
-	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
+	github.com/openai/openai-go/v3 v3.66.0
 	github.com/pkoukk/tiktoken-go v0.1.8
 	github.com/qdrant/go-client v1.19.2
 )
 
 require (
+	github.com/coder/websocket v1.8.15 // indirect
 	github.com/dlclark/regexp2 v1.10.0 // indirect
+	github.com/tidwall/gjson v1.19.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tidwall/sjson v1.2.5 // indirect
 	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
